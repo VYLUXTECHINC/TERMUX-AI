@@ -7,6 +7,9 @@ opencode-src/
 deps-android/
 dist/
 
+# VYLUX build artifacts
+vylux-models.json
+
 # Downloaded tools
 zig-*/
 android-ndk-*/

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Environment variables for building OpenCode for Android aarch64
+# Environment variables for building VYLUX AI for Android aarch64 (Termux)
 # Source this file before running any build scripts:
 #   source scripts/env.sh
 
@@ -7,14 +7,27 @@ set -euo pipefail
 
 export REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
+# Branding
+export VYLUX_NAME="${VYLUX_NAME:-VYLUX}"
+export VYLUX_BINARY="${VYLUX_BINARY:-vylux}"
+export VYLUX_IDENTITY="${VYLUX_IDENTITY:-VYLUX AI made by VYLUX TECH}"
+
 # Versions
 export BUN_VERSION="${BUN_VERSION:-1.2.13}"
 export BUN_TAG="bun-v${BUN_VERSION}"
 export WEBKIT_COMMIT="${WEBKIT_COMMIT:-017930ebf915121f8f593bef61cbbca82d78132d}"
 export ICU_VERSION="${ICU_VERSION:-75.1}"
 export ZIG_VERSION="${ZIG_VERSION:-0.15.2}"
-export OPENCODE_VERSION="${OPENCODE_VERSION:-1.3.13}"
+export VYLUX_VERSION="${VYLUX_VERSION:-1.0.0}"
 export ANDROID_API="${ANDROID_API:-24}"
+
+# Source version
+export OPENCODE_VERSION="${OPENCODE_VERSION:-1.3.13}"
+
+# AI Provider: DeepSeek only
+export VYLUX_DEFAULT_PROVIDER="${VYLUX_DEFAULT_PROVIDER:-deepseek}"
+export VYLUX_MODELS_URL="${VYLUX_MODELS_URL:-}"
+export VYLUX_PRIORITY_MODELS="${VYLUX_PRIORITY_MODELS:-deepseek-chat,deepseek-reasoner}"
 
 # Android NDK
 export ANDROID_NDK_HOME="${ANDROID_NDK_HOME:-/opt/android-ndk}"
@@ -51,7 +64,7 @@ export DIST_DIR="${WORK_DIR}/dist"
 # Number of parallel jobs (can be overridden for low-RAM machines)
 export JOBS="${JOBS:-$(nproc)}"
 
-echo "=== OpenCode Android Build Environment ==="
+echo "=== ${VYLUX_NAME} AI Android Build Environment ==="
 echo "Repo root:     ${REPO_ROOT}"
 echo "Work dir:      ${WORK_DIR}"
 echo "NDK:           ${ANDROID_NDK_HOME}"
@@ -59,6 +72,8 @@ echo "API Level:     ${ANDROID_API}"
 echo "Target:        ${ANDROID_TRIPLE}"
 echo "Bun version:   ${BUN_VERSION}"
 echo "WebKit commit: ${WEBKIT_COMMIT}"
-echo "OpenCode ver:  ${OPENCODE_VERSION}"
+echo "${VYLUX_NAME} ver:  ${VYLUX_VERSION}"
+echo "AI Provider:   ${VYLUX_DEFAULT_PROVIDER}"
+echo "Identity:      ${VYLUX_IDENTITY}"
 echo "Jobs:          ${JOBS}"
 echo "==========================================="

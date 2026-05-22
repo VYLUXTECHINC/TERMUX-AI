@@ -1,11 +1,11 @@
 #!/usr/bin/env bun
 /**
- * Build OpenCode for Android (aarch64)
+ * Build VYLUX AI for Android (aarch64)
  *
  * This script:
  * 1. Generates the models-snapshot.js
  * 2. Loads migrations
- * 3. Bundles OpenCode using Bun.build() with compile targeting the host platform
+ * 3. Bundles using Bun.build() with compile targeting the host platform
  * 4. Extracts the module graph from the compiled binary
  * 5. Appends it to our Android bun binary to create the final standalone
  */
@@ -28,36 +28,47 @@ if (!fs.existsSync(ANDROID_BUN)) {
 
 process.chdir(OPENCODE_DIR)
 
-const VERSION = process.env.OPENCODE_VERSION || "1.3.13"
-const CHANNEL = process.env.OPENCODE_CHANNEL || "latest"
+const VERSION = process.env.VYLUX_VERSION || process.env.OPENCODE_VERSION || "1.0.0"
+const CHANNEL = process.env.VYLUX_CHANNEL || process.env.OPENCODE_CHANNEL || "latest"
+const VYLUX_NAME = process.env.VYLUX_NAME || "VYLUX"
+const VYLUX_BINARY = process.env.VYLUX_BINARY || "vylux"
+const VYLUX_IDENTITY = process.env.VYLUX_IDENTITY || "VYLUX AI made by VYLUX TECH"
 
-console.log(`Building OpenCode v${VERSION} (channel: ${CHANNEL}) for Android aarch64`)
+console.log(`Building ${VYLUX_NAME} AI v${VERSION} (channel: ${CHANNEL}) for Android aarch64`)
 
 // Step 1: Generate models-snapshot.js
 console.log("\n=== Step 1: Generating models-snapshot.js ===")
-const modelsUrl = process.env.OPENCODE_MODELS_URL || "https://models.dev"
+
+// VYLUX: Use custom models snapshot with DeepSeek only
+const vyluxModelsPath = process.env.VYLUX_MODELS_JSON
 let modelsData: string = ""
-if (process.env.MODELS_DEV_API_JSON) {
-  modelsData = await Bun.file(process.env.MODELS_DEV_API_JSON).text()
+if (vyluxModelsPath) {
+  console.log(`Using VYLUX custom models from: ${vyluxModelsPath}`)
+  modelsData = await Bun.file(vyluxModelsPath).text()
 } else {
-  console.log(`Fetching from ${modelsUrl}/api.json ...`)
-  let fetchErr: Error | null = null
-  for (let attempt = 1; attempt <= 3; attempt++) {
-    try {
-      const resp = await fetch(`${modelsUrl}/api.json`, { signal: AbortSignal.timeout(15000) })
-      if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
-      modelsData = await resp.text()
-      fetchErr = null
-      break
-    } catch (err: any) {
-      fetchErr = err
-      console.error(`  Attempt ${attempt}/3 failed: ${err.message}`)
-      if (attempt < 3) await new Promise(r => setTimeout(r, 2000 * attempt))
+  const modelsUrl = process.env.OPENCODE_MODELS_URL || "https://models.dev"
+  if (process.env.MODELS_DEV_API_JSON) {
+    modelsData = await Bun.file(process.env.MODELS_DEV_API_JSON).text()
+  } else {
+    console.log(`Fetching from ${modelsUrl}/api.json ...`)
+    let fetchErr: Error | null = null
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        const resp = await fetch(`${modelsUrl}/api.json`, { signal: AbortSignal.timeout(15000) })
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
+        modelsData = await resp.text()
+        fetchErr = null
+        break
+      } catch (err: any) {
+        fetchErr = err
+        console.error(`  Attempt ${attempt}/3 failed: ${err.message}`)
+        if (attempt < 3) await new Promise(r => setTimeout(r, 2000 * attempt))
+      }
     }
-  }
-  if (fetchErr) {
-    console.error(`ERROR: Failed to fetch models after 3 attempts: ${fetchErr.message}`)
-    process.exit(1)
+    if (fetchErr) {
+      console.error(`ERROR: Failed to fetch models after 3 attempts: ${fetchErr.message}`)
+      process.exit(1)
+    }
   }
 }
 await Bun.write(
@@ -103,7 +114,7 @@ console.log(`Loaded ${migrations.length} migrations`)
 
 // Step 3: Build with Bun.build() --compile for the HOST platform
 // This creates a standalone binary for the host, from which we extract the module graph
-console.log("\n=== Step 3: Bundling OpenCode ===")
+console.log("\n=== Step 3: Bundling VYLUX AI ===")
 
 const plugin = createSolidTransformPlugin()
 
@@ -129,7 +140,7 @@ await $`mkdir -p ${OUTPUT_DIR}`
 
 // Build with --compile for the HOST platform to get a standalone binary
 // We'll extract the module graph from it
-const hostBinaryPath = path.join(OUTPUT_DIR, "opencode-host")
+const hostBinaryPath = path.join(OUTPUT_DIR, `${VYLUX_BINARY}-host`)
 
 console.log("Building standalone binary for host platform...")
 const result = await Bun.build({
@@ -142,10 +153,13 @@ const result = await Bun.build({
     autoloadTsconfig: true,
     autoloadPackageJson: true,
     outfile: hostBinaryPath,
-    execArgv: [`--user-agent=opencode/${VERSION}`, "--use-system-ca", "--"],
+    execArgv: [`--user-agent=${VYLUX_BINARY}/${VERSION}`, "--use-system-ca", "--"],
   },
   entrypoints: ["./src/index.ts", parserWorkerResolved, workerPath],
   define: {
+    VYLUX_VERSION: `'${VERSION}'`,
+    VYLUX_NAME: `'${VYLUX_NAME}'`,
+    VYLUX_IDENTITY: `'${VYLUX_IDENTITY}'`,
     OPENCODE_VERSION: `'${VERSION}'`,
     OPENCODE_MIGRATIONS: JSON.stringify(migrations),
     OTUI_TREE_SITTER_WORKER_PATH: bunfsRoot + workerRelativePath,
@@ -340,7 +354,7 @@ const totalView = new DataView(output.buffer, outputSize - 8, 8)
 totalView.setUint32(0, newTotalByteCount & 0xFFFFFFFF, true)
 totalView.setUint32(4, Math.floor(newTotalByteCount / 0x100000000), true)
 
-const androidOutputPath = path.join(OUTPUT_DIR, "opencode")
+const androidOutputPath = path.join(OUTPUT_DIR, VYLUX_BINARY)
 await Bun.write(androidOutputPath, output)
 fs.chmodSync(androidOutputPath, 0o755)
 
