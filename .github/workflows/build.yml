@@ -1,4 +1,4 @@
-name: Build VYLUX AI for Android/Termux
+name: Build for Android/Termux
 
 on:
   push:
@@ -6,17 +6,17 @@ on:
       - 'v*'
   workflow_dispatch:
     inputs:
-      vylux_version:
-        description: 'VYLUX AI version to build'
+      app_version:
+        description: 'Version to build'
         required: false
         default: '1.0.0'
 
 env:
   BUN_VERSION: "1.2.13"
-  VYLUX_VERSION: "1.0.0"
-  VYLUX_NAME: "VYLUX"
-  VYLUX_BINARY: "vylux"
-  VYLUX_IDENTITY: "VYLUX AI made by VYLUX TECH"
+  APP_VERSION: "1.0.0"
+  APP_NAME: "opencode"
+  APP_BINARY: "opencode"
+  APP_IDENTITY: ""
   ANDROID_API: "24"
   ANDROID_NDK_VERSION: "28.1.13356709"
   WEBKIT_COMMIT: "017930ebf915121f8f593bef61cbbca82d78132d"
@@ -37,8 +37,8 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Override version from input
-        if: github.event.inputs.vylux_version
-        run: echo "VYLUX_VERSION=${{ github.event.inputs.vylux_version }}" >> $GITHUB_ENV
+        if: github.event.inputs.app_version
+        run: echo "APP_VERSION=${{ github.event.inputs.app_version }}" >> $GITHUB_ENV
 
       - name: Create work directory
         run: |
@@ -46,9 +46,6 @@ jobs:
           echo "Work directory: $WORK_DIR"
           df -h /mnt/spindrive
 
-      # =============================================
-      # Install build dependencies
-      # =============================================
       - name: Install system packages
         run: |
           sudo apt-get update
@@ -119,7 +116,7 @@ jobs:
           echo "ZIG_BIN=$ZIG_DIR/zig" >> $GITHUB_ENV
           echo "$ZIG_DIR" >> $GITHUB_PATH
 
-      - name: Install Bun (host, pinned for module graph compatibility)
+      - name: Install Bun (host)
         run: |
           HOST_BUN_VERSION="1.3.2"
           GOT="$(bun --version 2>/dev/null || true)"
@@ -130,11 +127,7 @@ jobs:
             export PATH="$HOME/.bun/bin:$PATH"
           fi
           echo "Host Bun version: $(bun --version)"
-          echo "Target Bun version: $BUN_VERSION"
 
-      # =============================================
-      # Cache expensive build artifacts
-      # =============================================
       - name: Compute patch hashes
         id: hashes
         run: |
@@ -166,45 +159,30 @@ jobs:
           path: ${{ env.WORK_DIR }}/bun-build/bun
           key: bun-android-${{ env.BUN_VERSION }}-${{ steps.hashes.outputs.bun_patch_hash }}-${{ steps.hashes.outputs.zig_patch_hash }}
 
-      # =============================================
-      # Clone and patch sources
-      # =============================================
-      - name: Clone and patch Bun + WebKit
+      - name: Clone and patch sources
         if: steps.cache-bun.outputs.cache-hit != 'true' || steps.cache-webkit.outputs.cache-hit != 'true'
         run: |
           source scripts/env.sh
           ./scripts/apply-patches.sh
 
-      # =============================================
-      # Build ICU
-      # =============================================
       - name: Build ICU 75.1
         if: steps.cache-icu.outputs.cache-hit != 'true'
         run: |
           source scripts/env.sh
           ./scripts/build-icu.sh
 
-      # =============================================
-      # Build WebKit/JSC
-      # =============================================
       - name: Build WebKit/JSC
         if: steps.cache-webkit.outputs.cache-hit != 'true'
         run: |
           source scripts/env.sh
           ./scripts/build-webkit.sh
 
-      # =============================================
-      # Build TinyCC (libtcc.a)
-      # =============================================
       - name: Build TinyCC
         if: steps.cache-bun.outputs.cache-hit != 'true'
         run: |
           source scripts/env.sh
           ./scripts/build-tinycc.sh
 
-      # =============================================
-      # Build Bun
-      # =============================================
       - name: Build Bun
         if: steps.cache-bun.outputs.cache-hit != 'true'
         run: |
@@ -222,33 +200,24 @@ jobs:
           file "$BUN_BINARY"
           readelf -h "$BUN_BINARY" | grep -E "Machine|Class"
 
-      # =============================================
-      # Build libopentui.so
-      # =============================================
       - name: Build libopentui.so
         run: |
           source scripts/env.sh
           ./scripts/build-opentui.sh
 
-      # =============================================
-      # Build VYLUX AI standalone binary
-      # =============================================
-      - name: Build VYLUX AI standalone binary
+      - name: Build standalone binary
         run: |
           source scripts/env.sh
           ./scripts/build-opencode.sh
 
-      - name: Verify VYLUX AI binary
+      - name: Verify binary
         run: |
-          VYLUX_BINARY="${WORK_DIR}/dist/vylux"
-          echo "VYLUX binary: $VYLUX_BINARY"
-          ls -lh "$VYLUX_BINARY"
-          file "$VYLUX_BINARY"
-          readelf -h "$VYLUX_BINARY" | grep -E "Machine|Class"
+          BINARY="${WORK_DIR}/dist/opencode"
+          echo "Binary: $BINARY"
+          ls -lh "$BINARY"
+          file "$BINARY"
+          readelf -h "$BINARY" | grep -E "Machine|Class"
 
-      # =============================================
-      # Create packages
-      # =============================================
       - name: Create distribution packages
         run: |
           source scripts/env.sh
@@ -259,21 +228,15 @@ jobs:
           echo "=== Built packages ==="
           ls -lh "${WORK_DIR}/packages/"
 
-      # =============================================
-      # Upload artifacts
-      # =============================================
       - name: Upload packages as artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: vylux-termux-${{ env.VYLUX_VERSION }}
+          name: termux-${{ env.APP_VERSION }}
           path: |
             ${{ env.WORK_DIR }}/packages/*.zip
             ${{ env.WORK_DIR }}/packages/*.pkg.tar.xz
             ${{ env.WORK_DIR }}/packages/*.deb
 
-      # =============================================
-      # Release (only on tag push)
-      # =============================================
       - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
@@ -283,35 +246,30 @@ jobs:
             ${{ env.WORK_DIR }}/packages/*.pkg.tar.xz
             ${{ env.WORK_DIR }}/packages/*.deb
             body: |
-            ## VYLUX AI ${{ env.VYLUX_VERSION }} for Android/Termux (aarch64)
+            ## ${{ env.APP_NAME }} ${{ env.APP_VERSION }} for Android/Termux (aarch64)
 
-            **VYLUX AI made by VYLUX TECH**
-
-            Terminal AI coding assistant for Android/Termux with DeepSeek and Gemini models.
+            Terminal AI coding assistant for Android/Termux.
 
             ### Installation
 
             **Termux (pacman):**
             ```bash
-            pacman -U vylux-${{ env.VYLUX_VERSION }}-1-aarch64.pkg.tar.xz
+            pacman -U opencode-aarch64.pkg.tar.xz
             ```
 
             **Termux (dpkg):**
             ```bash
-            dpkg -i vylux_${{ env.VYLUX_VERSION }}_aarch64.deb
+            dpkg -i opencode_aarch64.deb
             ```
 
             **Standalone binary:**
             ```bash
-            chmod +x vylux
-            mv vylux $PREFIX/bin/
+            chmod +x opencode
+            mv opencode $PREFIX/bin/
             ```
           draft: false
           prerelease: false
 
-      # =============================================
-      # Cleanup (keep cache, remove intermediates)
-      # =============================================
       - name: Cleanup intermediate files
         if: always()
         run: |
@@ -319,5 +277,3 @@ jobs:
           rm -rf "${WORK_DIR}/icu-src" "${WORK_DIR}/icu-host-build" "${WORK_DIR}/icu-android-build"
           rm -rf "${WORK_DIR}/webkit-build"
           rm -rf "${WORK_DIR}/bun-build/cache/zig"
-          echo "Cleaned up intermediate files"
-          df -h /mnt/spindrive

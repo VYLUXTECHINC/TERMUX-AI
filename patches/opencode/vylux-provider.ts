@@ -33,11 +33,11 @@ function makeModel(modelId: string): LanguageModelV3 {
       const url = `${BASE_URL}/?query=${encodeURIComponent(query)}&model=${modelId}`
       const response = await fetch(url)
       if (!response.ok) {
-        throw new Error(`VYLUX API error (${response.status}): ${await response.text()}`)
+        throw new Error(`API error (${response.status}): ${await response.text()}`)
       }
       const data = await response.json()
       if (!data.success) {
-        throw new Error(`VYLUX API error: ${JSON.stringify(data)}`)
+        throw new Error(`API error: ${JSON.stringify(data)}`)
       }
       return {
         text: data.message.content,
@@ -52,11 +52,11 @@ function makeModel(modelId: string): LanguageModelV3 {
       const url = `${BASE_URL}/?query=${encodeURIComponent(query)}&model=${modelId}`
       const response = await fetch(url)
       if (!response.ok) {
-        throw new Error(`VYLUX API error (${response.status}): ${await response.text()}`)
+        throw new Error(`API error (${response.status}): ${await response.text()}`)
       }
       const data = await response.json()
       if (!data.success) {
-        throw new Error(`VYLUX API error: ${JSON.stringify(data)}`)
+        throw new Error(`API error: ${JSON.stringify(data)}`)
       }
 
       const content = data.message.content || ""

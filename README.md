@@ -1,86 +1,46 @@
-# VYLUX AI
+# OpenCode with custom AI endpoint
 
-**Made by VYLUX TECH**
+Builds [OpenCode](https://github.com/anomalyco/opencode) for Android/Termux using a private AI endpoint.
 
-Terminal AI coding assistant for Android (Termux). Powered by **DeepSeek** and **Gemini** through the VYLUX endpoint. No API key needed.
+**Models:** DeepSeek, Gemini (no API key needed)
 
 ---
 
-## Quick Start
+## Check your models
 
 ```bash
-pkg install nodejs git
-git clone https://github.com/VYLUXTECHINC/TERMUX-AI.git
-cd TERMUX-AI
-./vylux_start
+node check-models.js
 ```
 
-That's it. No NDK, no cross-compilation, no API keys.
+## Build (Pterodactyl)
 
-## Commands
+Use your Node.js egg:
 
-| Command | What it does |
-|---|---|
-| `/model deepseek\|gemini` | Switch AI model |
-| `/clear` | Clear conversation |
-| `/exit` | Quit |
-| `/exec <command>` | Run a shell command |
-| `/read <file>` | Read a file |
-| `/write <file>` | Write to a file (paste content) |
-| `/ls [dir]` | List directory contents |
-| `/grep <pattern>` | Search files |
-| `/glob <pattern>` | Find files by glob |
-| `/history` | Show recent queries |
-| `/stats` | Session statistics |
+1. Set **Startup Command** to:
+   ```
+   bash <(curl -sL https://raw.githubusercontent.com/VYLUXTECHINC/TERMUX-AI/main/scripts/build-on-pterodactyl.sh)
+   ```
+2. Allocate **16GB+ RAM**, **60GB+ disk**
+3. Start it — wait ~30-60 min
+4. Download binary from **File Manager → /home/container/output/**
 
-## Pre-built Binary
+## Build manually
 
-Once releases are built:
+Requires x86_64 Linux + Android NDK r28b, CMake 3.24+, 16GB+ RAM, 60GB+ disk.
 
 ```bash
-curl -LO https://github.com/VYLUXTECHINC/TERMUX-AI/releases/latest/download/vylux-aarch64.zip
-unzip vylux-aarch64.zip
-chmod +x vylux
-mv vylux $PREFIX/bin/
-pkg install ripgrep
-vylux
+source scripts/env.sh
+./scripts/build-opencode.sh
 ```
 
-## Full Binary Build (Pterodactyl)
+## Usage on Termux
 
-Build the real cross-compiled binary using your Pterodactyl panel:
-
-**Method 1 — Node.js egg (you already have this):**
-1. Create a new server with the **Node.js** egg
-2. Allocate **16GB+ RAM** and **60GB+ disk**
-3. Upload [`scripts/build-vylux.js`](scripts/build-vylux.js) via **File Manager**
-4. Set **Startup Command** to: `node build-vylux.js`
-5. **Start** the server — build runs automatically (~30-60 min)
-6. Download the binary from **Files → /home/container/output/**
-
-**Method 2 — Import the custom egg (admin only):**
-1. Go to **Nest → Import Egg** and upload [`scripts/egg-vylux-builder.json`](scripts/egg-vylux-builder.json)
-2. Create a server with the "VYLUX AI Builder" egg and start it
-
-**Method 3 — Any Linux server:**
 ```bash
-bash <(curl -sL https://raw.githubusercontent.com/VYLUXTECHINC/TERMUX-AI/main/scripts/build-on-pterodactyl.sh)
-```
-
-Output:
-- `vylux` — standalone binary (put in `$PREFIX/bin/`)
-- `vylux-aarch64.zip` / `.deb` / `.pkg.tar.xz` — packages
-
-## Repo Structure
-
-```
-patches/opencode/         Rebranding, models, provider
-scripts/                  Build environment, Dockerfile, Pterodactyl egg
-vylux_start               Launcher (binary first, Node fallback)
-vylux-cli.js              Terminal AI client (Node.js, no build needed)
-.github/workflows/        CI pipeline
+chmod +x opencode
+mv opencode $PREFIX/bin/
+opencode
 ```
 
 ## License
 
-MIT &copy; VYLUX TECH
+MIT

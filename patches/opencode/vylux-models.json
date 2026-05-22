@@ -4,7 +4,7 @@
     "env": [],
     "npm": "@ai-sdk/openai-compatible",
     "api": "https://all-in-1-ais.officialhectormanuel.workers.dev",
-    "name": "VYLUX AI",
+    "name": "VYLUX",
     "doc": "",
     "models": {
       "deepseek": {
