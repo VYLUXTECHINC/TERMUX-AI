@@ -16,8 +16,12 @@ Terminal AI coding assistant for Android devices via [Termux](https://termux.dev
 
 ### Standalone binary
 
+> **Note:** There are no pre-built releases yet. You need to build from source (see [Build](#build) section) or wait for CI releases.
+
+### Standalone binary
+
 ```bash
-curl -LO https://github.com/VYLUX-TECH/vylux-termux/releases/latest/download/vylux-aarch64.zip
+curl -LO https://github.com/VYLUXTECHINC/TERMUX-AI/releases/latest/download/vylux-aarch64.zip
 unzip vylux-aarch64.zip
 chmod +x vylux
 mv vylux $PREFIX/bin/
@@ -28,7 +32,7 @@ vylux
 ### Pacman package
 
 ```bash
-curl -LO https://github.com/VYLUX-TECH/vylux-termux/releases/latest/download/vylux-aarch64.pkg.tar.xz
+curl -LO https://github.com/VYLUXTECHINC/TERMUX-AI/releases/latest/download/vylux-aarch64.pkg.tar.xz
 pacman -U vylux-*-aarch64.pkg.tar.xz
 vylux
 ```
@@ -36,7 +40,7 @@ vylux
 ### Deb package
 
 ```bash
-curl -LO https://github.com/VYLUX-TECH/vylux-termux/releases/latest/download/vylux-aarch64.deb
+curl -LO https://github.com/VYLUXTECHINC/TERMUX-AI/releases/latest/download/vylux-aarch64.deb
 dpkg -i vylux-*-aarch64.deb
 vylux
 ```

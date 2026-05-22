@@ -55,9 +55,9 @@ cat > "$PACMAN_STAGING/.PKGINFO" << EOF
 pkgname = ${VYLUX_BINARY}
 pkgver = ${VYLUX_VERSION}-1
 pkgdesc = ${VYLUX_NAME} AI - Terminal AI coding assistant by VYLUX TECH
-url = https://github.com/VYLUX-TECH/vylux-termux
+url = https://github.com/VYLUXTECHINC/TERMUX-AI
 builddate = ${BUILD_DATE}
-packager = VYLUX-TECH
+packager = VYLUXTECHINC
 size = ${BINARY_SIZE}
 arch = aarch64
 license = MIT
@@ -91,7 +91,7 @@ Installed-Size: ${INSTALLED_SIZE}
 Depends: ripgrep
 Section: utils
 Priority: optional
-Homepage: https://github.com/VYLUX-TECH/vylux-termux
+Homepage: https://github.com/VYLUXTECHINC/TERMUX-AI
 Description: ${VYLUX_NAME} AI - Terminal AI coding assistant by VYLUX TECH
  ${VYLUX_NAME} AI is a terminal AI coding assistant for Android/Termux.
  Powered by DeepSeek and Gemini through the VYLUX endpoint.
