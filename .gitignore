@@ -8,7 +8,7 @@ deps-android/
 dist/
 
 # VYLUX build artifacts
-vylux-models.json
+/vylux-models.json
 
 # Downloaded tools
 zig-*/
