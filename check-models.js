@@ -3,7 +3,7 @@
 const https = require("https")
 
 const BASE_URL = "https://all-in-1-ais.officialhectormanuel.workers.dev"
-const MODELS = ["deepseek", "gemini"]
+const MODELS = ["deepseek"]
 
 function query(model) {
   return new Promise((resolve) => {

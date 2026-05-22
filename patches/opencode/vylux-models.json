@@ -9,32 +9,7 @@
     "models": {
       "deepseek": {
         "id": "deepseek",
-        "name": "DeepSeek",
-        "family": "vylux",
-        "attachment": true,
-        "reasoning": true,
-        "tool_call": true,
-        "temperature": true,
-        "knowledge": "current",
-        "modalities": {
-          "input": ["text"],
-          "output": ["text"]
-        },
-        "open_weights": false,
-        "limit": {
-          "context": 999999,
-          "output": 999999
-        },
-        "cost": {
-          "input": 0,
-          "output": 0,
-          "cache_read": 0,
-          "cache_write": 0
-        }
-      },
-      "gemini": {
-        "id": "gemini",
-        "name": "Gemini",
+        "name": "AI",
         "family": "vylux",
         "attachment": true,
         "reasoning": true,
