@@ -24,7 +24,14 @@ That's it. No NDK, no cross-compilation, no API keys.
 | `/model deepseek\|gemini` | Switch AI model |
 | `/clear` | Clear conversation |
 | `/exit` | Quit |
-| `exec: <command>` | Run a shell command |
+| `/exec <command>` | Run a shell command |
+| `/read <file>` | Read a file |
+| `/write <file>` | Write to a file (paste content) |
+| `/ls [dir]` | List directory contents |
+| `/grep <pattern>` | Search files |
+| `/glob <pattern>` | Find files by glob |
+| `/history` | Show recent queries |
+| `/stats` | Session statistics |
 
 ## Pre-built Binary
 
