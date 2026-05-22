@@ -1,24 +1,34 @@
-# VYLUX AI for Termux (Android aarch64)
+# VYLUX AI
 
-**VYLUX AI made by VYLUX TECH**
+**Made by VYLUX TECH**
 
-Terminal AI coding assistant for Android devices via [Termux](https://termux.dev/). Powered by **DeepSeek** and **Gemini** through the VYLUX endpoint.
+Terminal AI coding assistant for Android (Termux). Powered by **DeepSeek** and **Gemini** through the VYLUX endpoint. No API key needed.
 
-## Features
+---
 
-- Full terminal UI (TUI) with prompt, model selector, status bar
-- Two AI models: **DeepSeek** and **Gemini** (switch between them)
-- Code-aware file editing, globbing, grep, bash execution
-- Unlimited usage through the VYLUX endpoint
-- Standalone binary, no runtime dependencies beyond `ripgrep`
+## Quick Start
 
-## Install (Termux)
+```bash
+pkg install nodejs git
+git clone https://github.com/VYLUXTECHINC/TERMUX-AI.git
+cd TERMUX-AI
+./vylux_start
+```
 
-### Standalone binary
+That's it. No NDK, no cross-compilation, no API keys.
 
-> **Note:** There are no pre-built releases yet. You need to build from source (see [Build](#build) section) or wait for CI releases.
+## Commands
 
-### Standalone binary
+| Command | What it does |
+|---|---|
+| `/model deepseek\|gemini` | Switch AI model |
+| `/clear` | Clear conversation |
+| `/exit` | Quit |
+| `exec: <command>` | Run a shell command |
+
+## Pre-built Binary
+
+Once releases are built:
 
 ```bash
 curl -LO https://github.com/VYLUXTECHINC/TERMUX-AI/releases/latest/download/vylux-aarch64.zip
@@ -29,48 +39,19 @@ pkg install ripgrep
 vylux
 ```
 
-### Pacman package
-
-```bash
-curl -LO https://github.com/VYLUXTECHINC/TERMUX-AI/releases/latest/download/vylux-aarch64.pkg.tar.xz
-pacman -U vylux-*-aarch64.pkg.tar.xz
-vylux
-```
-
-### Deb package
-
-```bash
-curl -LO https://github.com/VYLUXTECHINC/TERMUX-AI/releases/latest/download/vylux-aarch64.deb
-dpkg -i vylux-*-aarch64.deb
-vylux
-```
-
-### After install
-
-No API key needed. VYLUX AI uses the VYLUX endpoint with DeepSeek and Gemini. Just run `vylux` and use the model selector in the TUI to switch between models.
-
-## What This Repo Contains
+## Repo Structure
 
 ```
-vylux-termux/
-  patches/
-    bun/android-support.patch         # Bun Android/aarch64 support
-    webkit/android-support.patch      # WebKit/JSC Android fixes
-    zig/posix-android-sigaction.patch # Zig stdlib Android fix
-    opentui/android-libc-link.patch   # Android dlopen fix
-    opencode/vylux-sed.sh             # Rebranding: OpenCode -> VYLUX
-    opencode/vylux-models.json        # Custom models config (VYLUX endpoint)
-    opencode/vylux-provider.ts        # Custom provider for VYLUX GET-based API
-  scripts/
-    env.sh                            # Build environment
-    build-*.sh                        # Build scripts for each component
-  .github/workflows/
-    build.yml                         # CI pipeline
+patches/opencode/         Rebranding, models, provider
+scripts/                  Build environment & scripts
+vylux_start               Launcher (binary path first, Node fallback)
+vylux-cli.js              Terminal AI client
+.github/workflows/        CI pipeline
 ```
 
-## Build
+## Build (for contributors)
 
-Requires x86_64 Linux with Android NDK r28b, CMake 3.24+, 16GB+ RAM, 60GB+ disk.
+Requires x86_64 Linux + Android NDK r28b, CMake 3.24+, 16GB+ RAM, 60GB+ disk.
 
 ```bash
 source scripts/env.sh
