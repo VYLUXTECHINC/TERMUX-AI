@@ -46,23 +46,35 @@ pkg install ripgrep
 vylux
 ```
 
+## Full Binary Build (Pterodactyl)
+
+If you have a Pterodactyl panel, build the real cross-compiled binary:
+
+**Method 1 — Import the egg:**
+1. In your Pterodactyl panel, go to **Nest → Import Egg**
+2. Upload [`scripts/egg-vylux-builder.json`](scripts/egg-vylux-builder.json)
+3. Create a new server using the "VYLUX AI Builder" egg
+4. Allocate **16GB+ RAM** and **60GB+ disk** — then start it
+5. Download the built binary from **Files → /home/container/output/**
+
+**Method 2 — Manual (any Linux server):**
+```bash
+wget -O build-vylux.sh https://raw.githubusercontent.com/VYLUXTECHINC/TERMUX-AI/main/scripts/build-on-pterodactyl.sh
+bash build-vylux.sh
+```
+
+Output files appear in `output/`:
+- `vylux` — standalone binary for Termux
+- `vylux-aarch64.zip` / `.deb` / `.pkg.tar.xz` — installable packages
+
 ## Repo Structure
 
 ```
 patches/opencode/         Rebranding, models, provider
-scripts/                  Build environment & scripts
-vylux_start               Launcher (binary path first, Node fallback)
-vylux-cli.js              Terminal AI client
+scripts/                  Build environment, Dockerfile, Pterodactyl egg
+vylux_start               Launcher (binary first, Node fallback)
+vylux-cli.js              Terminal AI client (Node.js, no build needed)
 .github/workflows/        CI pipeline
-```
-
-## Build (for contributors)
-
-Requires x86_64 Linux + Android NDK r28b, CMake 3.24+, 16GB+ RAM, 60GB+ disk.
-
-```bash
-source scripts/env.sh
-./scripts/build-opencode.sh
 ```
 
 ## License
