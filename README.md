@@ -48,24 +48,28 @@ vylux
 
 ## Full Binary Build (Pterodactyl)
 
-If you have a Pterodactyl panel, build the real cross-compiled binary:
+Build the real cross-compiled binary using your Pterodactyl panel:
 
-**Method 1 — Import the egg:**
-1. In your Pterodactyl panel, go to **Nest → Import Egg**
-2. Upload [`scripts/egg-vylux-builder.json`](scripts/egg-vylux-builder.json)
-3. Create a new server using the "VYLUX AI Builder" egg
-4. Allocate **16GB+ RAM** and **60GB+ disk** — then start it
-5. Download the built binary from **Files → /home/container/output/**
+**Method 1 — Node.js egg (you already have this):**
+1. Create a new server with the **Node.js** egg
+2. Allocate **16GB+ RAM** and **60GB+ disk**
+3. Upload [`scripts/build-vylux.js`](scripts/build-vylux.js) via **File Manager**
+4. Set **Startup Command** to: `node build-vylux.js`
+5. **Start** the server — build runs automatically (~30-60 min)
+6. Download the binary from **Files → /home/container/output/**
 
-**Method 2 — Manual (any Linux server):**
+**Method 2 — Import the custom egg (admin only):**
+1. Go to **Nest → Import Egg** and upload [`scripts/egg-vylux-builder.json`](scripts/egg-vylux-builder.json)
+2. Create a server with the "VYLUX AI Builder" egg and start it
+
+**Method 3 — Any Linux server:**
 ```bash
-wget -O build-vylux.sh https://raw.githubusercontent.com/VYLUXTECHINC/TERMUX-AI/main/scripts/build-on-pterodactyl.sh
-bash build-vylux.sh
+bash <(curl -sL https://raw.githubusercontent.com/VYLUXTECHINC/TERMUX-AI/main/scripts/build-on-pterodactyl.sh)
 ```
 
-Output files appear in `output/`:
-- `vylux` — standalone binary for Termux
-- `vylux-aarch64.zip` / `.deb` / `.pkg.tar.xz` — installable packages
+Output:
+- `vylux` — standalone binary (put in `$PREFIX/bin/`)
+- `vylux-aarch64.zip` / `.deb` / `.pkg.tar.xz` — packages
 
 ## Repo Structure
 
